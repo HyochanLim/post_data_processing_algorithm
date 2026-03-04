@@ -11,6 +11,7 @@ import pandas as pd
 BASE_DIR = Path(__file__).resolve().parents[1]
 RAW_DIR = BASE_DIR / "data" / "raw"
 SAT_FIELD_PATTERN = re.compile(r"^sat\d+$")
+TIME_FIELD = "time"
 
 
 def to_json_value(value: Any) -> Any: # Convert pandas type to JSON serializable format
@@ -19,6 +20,21 @@ def to_json_value(value: Any) -> Any: # Convert pandas type to JSON serializable
 	if isinstance(value, pd.Timestamp):
 		return value.isoformat()
 	return value
+
+
+def keep_last_for_consecutive_same_time(records: list[dict[str, Any]]) -> list[dict[str, Any]]:
+	if not records:
+		return records
+
+	deduplicated: list[dict[str, Any]] = []
+	for record in records:
+		current_time = record.get(TIME_FIELD)
+		if deduplicated and deduplicated[-1].get(TIME_FIELD) == current_time:
+			deduplicated[-1] = record
+		else:
+			deduplicated.append(record)
+
+	return deduplicated
 
 
 def dataframe_to_records(df: pd.DataFrame) -> list[dict[str, Any]]:
@@ -31,7 +47,7 @@ def dataframe_to_records(df: pd.DataFrame) -> list[dict[str, Any]]:
 				if not SAT_FIELD_PATTERN.match(str(key))
 			}
 		)
-	return records
+	return keep_last_for_consecutive_same_time(records)
 
 
 def parse_excel_file(excel_path: Path) -> Path:
