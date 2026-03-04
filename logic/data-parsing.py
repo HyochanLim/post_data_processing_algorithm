@@ -13,7 +13,7 @@ RAW_DIR = BASE_DIR / "data" / "raw"
 SAT_FIELD_PATTERN = re.compile(r"^sat\d+$")
 
 
-def to_json_value(value: Any) -> Any:
+def to_json_value(value: Any) -> Any: # Convert pandas type to JSON serializable format
 	if pd.isna(value):
 		return None
 	if isinstance(value, pd.Timestamp):
