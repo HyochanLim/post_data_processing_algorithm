@@ -6,8 +6,9 @@ const rocketMesh = require('../three/rocket.mesh').createRocketMesh;
 const viewerElement = document.getElementById('viewer');
 
 const camera = new three.PerspectiveCamera(60, 1, 0.1, 100);
+const cameraTarget = new three.Vector3(0, 0.5, 0);
 camera.position.set(1.8, 1.2, 2.2);
-camera.lookAt(0, 0, 0);
+camera.lookAt(cameraTarget);
 
 const renderer = new three.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
@@ -19,7 +20,90 @@ const directionalLight = new three.DirectionalLight(0xffffff, 1.1);
 directionalLight.position.set(2, 3, 2);
 scene.add(directionalLight);
 
+function createPositiveAxisArrow(axis, color) {
+    const group = new three.Group();
+    const shaftLength = 1.0;
+    const shaftRadius = 0.018;
+    const headLength = 0.16;
+    const headRadius = 0.05;
+
+    const material = new three.MeshStandardMaterial({ color: color });
+
+    const shaft = new three.Mesh(
+        new three.CylinderGeometry(shaftRadius, shaftRadius, shaftLength, 16),
+        material
+    );
+    shaft.position.y = shaftLength / 2;
+    group.add(shaft);
+
+    const head = new three.Mesh(
+        new three.ConeGeometry(headRadius, headLength, 18),
+        material
+    );
+    head.position.y = shaftLength + headLength / 2;
+    group.add(head);
+
+    if (axis === 'x') {
+        group.rotation.z = -Math.PI / 2;
+    } else if (axis === 'z') {
+        group.rotation.x = Math.PI / 2;
+    }
+
+    return group;
+}
+
+function createAxisLabel(text, color, position) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 128;
+    canvas.height = 128;
+
+    const context = canvas.getContext('2d');
+    context.clearRect(0, 0, canvas.width, canvas.height);
+    context.font = 'bold 72px sans-serif';
+    context.fillStyle = color;
+    context.textAlign = 'center';
+    context.textBaseline = 'middle';
+    context.fillText(text, 64, 68);
+
+    const texture = new three.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+
+    const material = new three.SpriteMaterial({
+        map: texture,
+        transparent: true,
+        depthTest: false
+    });
+
+    const sprite = new three.Sprite(material);
+    sprite.position.copy(position);
+    sprite.scale.set(0.24, 0.24, 0.24);
+    return sprite;
+}
+
+scene.add(createPositiveAxisArrow('x', 0xff4d4f));
+scene.add(createPositiveAxisArrow('y', 0x52c41a));
+scene.add(createPositiveAxisArrow('z', 0x40a9ff));
+scene.add(createAxisLabel('X', '#ff4d4f', new three.Vector3(1.28, 0.02, 0)));
+scene.add(createAxisLabel('Y', '#52c41a', new three.Vector3(0.02, 1.3, 0)));
+scene.add(createAxisLabel('Z', '#40a9ff', new three.Vector3(0, 0.02, 1.28)));
+
+const groundGrid = new three.GridHelper(8, 16, 0x999999, 0x444444);
+scene.add(groundGrid);
+
+const groundPlane = new three.Mesh(
+    new three.PlaneGeometry(8, 8),
+    new three.MeshStandardMaterial({
+        color: 0x222222,
+        transparent: true,
+        opacity: 0.22,
+        side: three.DoubleSide
+    })
+);
+groundPlane.rotation.x = -Math.PI / 2;
+scene.add(groundPlane);
+
 const rocket = rocketMesh();
+rocket.position.y = 0.6;
 scene.add(rocket);
 
 const qx = 0;
@@ -47,8 +131,8 @@ function updateCameraFromOrbit() {
     const y = radius * Math.sin(pitch);
     const z = radius * Math.cos(pitch) * Math.cos(yaw);
 
-    camera.position.set(x, y, z);
-    camera.lookAt(0, 0, 0);
+    camera.position.set(x + cameraTarget.x, y + cameraTarget.y, z + cameraTarget.z);
+    camera.lookAt(cameraTarget);
 }
 
 viewerElement.addEventListener('mousedown', (event) => {
