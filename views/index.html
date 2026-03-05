@@ -5,11 +5,32 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/styles/shared.css">
-    <script src="/logic/visualizer.bundle.js?v=20260305-1" defer></script>
+    <script src="/logic/visualizer.bundle.js?v=20260305-2" defer></script>
 </head>
 <body>
-    <div id="viewer"></div>
-    <button id="playBtn">Play</button>
-    <input type="range" id="timeSlider" min="0" max="10000" value="0">
+    <div id="appShell">
+        <div id="sceneLayout">
+            <div id="viewer"></div>
+
+            <aside id="telemetryPanel" aria-label="Flight telemetry">
+                <h2>Telemetry</h2>
+                <p>time: <span id="timeValue">0.00</span> s</p>
+                <p>vx: <span id="xVelocity">0.000</span> m/s</p>
+                <p>vy: <span id="yVelocity">0.000</span> m/s</p>
+                <p>vz: <span id="zVelocity">0.000</span> m/s</p>
+                <p>|v|: <span id="speedValue">0.000</span> m/s</p>
+                <hr>
+                <p>ax: <span id="xAccel">0.000</span> m/s²</p>
+                <p>ay: <span id="yAccel">0.000</span> m/s²</p>
+                <p>az: <span id="zAccel">0.000</span> m/s²</p>
+                <p>|a|: <span id="accelValue">0.000</span> m/s²</p>
+            </aside>
+        </div>
+
+        <div id="controls">
+            <button id="playBtn">Play</button>
+            <input type="range" id="timeSlider" min="0" max="10000" value="0">
+        </div>
+    </div>
 </body>
 </html>

@@ -12,7 +12,7 @@ else:
 
 totalFramesIndex = len(flightData) - 1 # 객체 기준 프레임의 인덱싱 번호
 
-# 일단 지금은 칼만필터가 구현이 안 됐기 때문에 단순 가속도를 적분해 속도를 구하도록 로직 작성
+# 일단 지금은 칼만필터가 구현이 안 됐기 때문에 단순 가속도를 적분해 속도를 구하도록 로직 작성 -> 현재 큰 문제점 발생, 추후 수정할 예정
 def calculateVelocity(flightData, frameIndex):
 	if frameIndex == 0:
 		flightData[frameIndex]["velocity"] = [0.0, 0.0, 0.0]  # 초기 속도는 0으로 가정해보기
@@ -22,7 +22,7 @@ def calculateVelocity(flightData, frameIndex):
 	dt = flightData[frameIndex]["time"] - flightData[previousFrameIndex]["time"]
 	# 단순 적분
 	flightData[frameIndex]["velocity"] = [
-		previousVelocity[0] + (flightData[frameIndex]["accel_x"] * dt),
+		previousVelocity[0] + ((flightData[frameIndex]["accel_x"] - 9.81) * dt), # 로켓이 기울기 때문에 그에 따른 중력이 분산되기 때문에 단순 이렇게 하면 절대 안됨 
 		previousVelocity[1] + (flightData[frameIndex]["accel_y"] * dt),
 		previousVelocity[2] + (flightData[frameIndex]["accel_z"] * dt),
 	]
