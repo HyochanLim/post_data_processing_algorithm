@@ -132,6 +132,13 @@ let lastY = 0;
 const velocityDirection = new three.Vector3();
 const rocketNoseAxis = new three.Vector3(0, 1, 0);
 const rotationQuaternion = new three.Quaternion();
+// raw데이터는 로켓의 prograde 방향이 +x축이라 지표좌표계 기준 y축으로 변환하기 위해 회전행렬을 곱해줘야 함
+const rawToViewerMatrix = new three.Matrix4().set(
+    0, 1, 0, 0,
+    1, 0, 0, 0,
+    0, 0, 1, 0,
+    0, 0, 0, 1
+);
 const minVelocityMagnitude = 0.02;
 const progradeArrowLength = 1.2;
 
@@ -247,7 +254,7 @@ function showRocketPose(frame) {
     const vy = Number(velocity[1]) || 0;
     const vz = Number(velocity[2]) || 0;
 
-    velocityDirection.set(vx, vy, vz);
+    velocityDirection.set(vx, vy, vz).applyMatrix4(rawToViewerMatrix);
     const speedMagnitude = velocityDirection.length();
 
     if (speedMagnitude < minVelocityMagnitude) {
