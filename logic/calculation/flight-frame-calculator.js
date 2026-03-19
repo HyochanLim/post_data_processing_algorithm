@@ -56,6 +56,53 @@ function toPrograde(frameData, minVelocityMagnitude) {
     };
 }
 
+function toNoseDirection(frameData) {
+    const q = frameData?.attitude_quaternion;
+    if (!Array.isArray(q) || q.length < 4) {
+        return {
+            valid: false,
+            direction: { x: 0, y: 1, z: 0 }
+        };
+    }
+
+    const q0 = Number(q[0]) || 0;
+    const q1 = Number(q[1]) || 0;
+    const q2 = Number(q[2]) || 0;
+    const q3 = Number(q[3]) || 0;
+    const norm = Math.sqrt((q0 * q0) + (q1 * q1) + (q2 * q2) + (q3 * q3));
+    if (norm <= 0) {
+        return {
+            valid: false,
+            direction: { x: 0, y: 1, z: 0 }
+        };
+    }
+
+    const w = q0 / norm;
+    const x = q1 / norm;
+    const y = q2 / norm;
+    const z = q3 / norm;
+
+    const dirX = (2 * ((x * y) - (w * z)));
+    const dirY = (1 - (2 * ((x * x) + (z * z))));
+    const dirZ = (2 * ((y * z) + (w * x)));
+    const mag = Math.sqrt((dirX * dirX) + (dirY * dirY) + (dirZ * dirZ));
+    if (mag <= 0) {
+        return {
+            valid: false,
+            direction: { x: 0, y: 1, z: 0 }
+        };
+    }
+
+    return {
+        valid: true,
+        direction: {
+            x: dirX / mag,
+            y: dirY / mag,
+            z: dirZ / mag
+        }
+    };
+}
+
 function getFrameState(file, frame, minVelocityMagnitude) {
     if (!Array.isArray(file) || file.length === 0) {
         return {
@@ -76,6 +123,7 @@ function getFrameState(file, frame, minVelocityMagnitude) {
         hasData: true,
         frameIndex,
         telemetry: toTelemetry(frameData),
+        nose: toNoseDirection(frameData),
         prograde: toPrograde(frameData, minVelocityMagnitude)
     };
 }

@@ -54,6 +54,30 @@ body {
     font-variant-numeric: tabular-nums;
 }
 
+.legendText {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.87rem;
+    color: #374151;
+}
+
+.legendSwatch {
+    width: 12px;
+    height: 12px;
+    border-radius: 999px;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    flex: 0 0 auto;
+}
+
+.progradeSwatch {
+    background: #ffd666;
+}
+
+.noseSwatch {
+    background: #2f6bff;
+}
+
 #telemetryPanel hr {
     border: 0;
     border-top: 1px solid #e5e7eb;

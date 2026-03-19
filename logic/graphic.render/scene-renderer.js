@@ -116,6 +116,17 @@ function createSceneRenderer() {
     progradeArrow.visible = false;
     scene.add(progradeArrow);
 
+    const noseArrow = new three.ArrowHelper(
+        new three.Vector3(0, 1, 0),
+        rocket.position.clone(),
+        0.01,
+        0x2f6bff,
+        0.16,
+        0.08
+    );
+    noseArrow.visible = false;
+    scene.add(noseArrow);
+
     const qx = 0;
     const qy = 0;
     const qz = 0;
@@ -130,6 +141,7 @@ function createSceneRenderer() {
     let lastY = 0;
 
     const velocityDirection = new three.Vector3();
+    const noseDirection = new three.Vector3(0, 1, 0);
     const rocketNoseAxis = new three.Vector3(0, 1, 0);
     const rotationQuaternion = new three.Quaternion();
 
@@ -212,30 +224,45 @@ function createSceneRenderer() {
     function applyFrameState(frameState, progradeArrowLength) {
         if (!frameState || !frameState.hasData) {
             progradeArrow.visible = false;
+            noseArrow.visible = false;
             return;
         }
 
-        if (!frameState.prograde.visible) {
+        if (frameState.nose && frameState.nose.valid) {
+            noseDirection.set(
+                frameState.nose.direction.x,
+                frameState.nose.direction.y,
+                frameState.nose.direction.z
+            );
+
+            rotationQuaternion.setFromUnitVectors(rocketNoseAxis, noseDirection);
+            rocket.quaternion.copy(rotationQuaternion);
+
+            noseArrow.visible = true;
+            noseArrow.position.copy(rocket.position);
+            noseArrow.setDirection(noseDirection);
+            noseArrow.setLength(progradeArrowLength, 0.24, 0.12);
+        } else {
+            noseArrow.visible = false;
+        }
+
+        if (frameState.prograde.visible) {
+            velocityDirection.set(
+                frameState.prograde.direction.x,
+                frameState.prograde.direction.y,
+                frameState.prograde.direction.z
+            );
+
+            progradeArrow.visible = true;
+            progradeArrow.position.copy(rocket.position);
+            progradeArrow.setDirection(velocityDirection);
+
+            const headLength = 0.24;
+            const headWidth = 0.12;
+            progradeArrow.setLength(progradeArrowLength, headLength, headWidth);
+        } else {
             progradeArrow.visible = false;
-            return;
         }
-
-        velocityDirection.set(
-            frameState.prograde.direction.x,
-            frameState.prograde.direction.y,
-            frameState.prograde.direction.z
-        );
-
-        rotationQuaternion.setFromUnitVectors(rocketNoseAxis, velocityDirection);
-        rocket.quaternion.copy(rotationQuaternion);
-
-        progradeArrow.visible = true;
-        progradeArrow.position.copy(rocket.position);
-        progradeArrow.setDirection(velocityDirection);
-
-        const headLength = 0.24;
-        const headWidth = 0.12;
-        progradeArrow.setLength(progradeArrowLength, headLength, headWidth);
     }
 
     function renderTelemetry(telemetry) {

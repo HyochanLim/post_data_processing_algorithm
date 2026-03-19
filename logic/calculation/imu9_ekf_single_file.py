@@ -137,7 +137,7 @@ class QuaternionEKF:
         Pp = F @ self.P @ F.T + self.Q
 
         # Correct (linearize at predicted state)
-        H = self._hjacob(float(xp[0]), float(xp[1]), float(xp[2]), float(xp[3]), B)
+        H = self._hjacob(float(xp[0, 0]), float(xp[1, 0]), float(xp[2, 0]), float(xp[3, 0]), B)
         S = H @ Pp @ H.T + self.R
         K = Pp @ H.T @ np.linalg.inv(S)
 

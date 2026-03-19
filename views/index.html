@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
     <link rel="stylesheet" href="/styles/shared.css">
-    <script src="/logic/graphic.render/app-controller.bundle.js?v=20260307-1" defer></script>
+    <script src="/logic/graphic.render/app-controller.bundle.js?v=20260319-7" defer></script>
 </head>
 <body>
     <div id="appShell">
@@ -19,6 +19,14 @@
                 <p>vy: <span id="yVelocity">0.000</span> m/s</p>
                 <p>vz: <span id="zVelocity">0.000</span> m/s</p>
                 <p>|v|: <span id="speedValue">0.000</span> m/s</p>
+                <p class="legendText">
+                    <span class="legendSwatch progradeSwatch" aria-hidden="true"></span>
+                    Yellow Arrow = Prograde (Velocity Direction)
+                </p>
+                <p class="legendText">
+                    <span class="legendSwatch noseSwatch" aria-hidden="true"></span>
+                    Blue Arrow = Nose Direction (EKF Attitude)
+                </p>
                 <hr>
                 <p>ax: <span id="xAccel">0.000</span> m/s²</p>
                 <p>ay: <span id="yAccel">0.000</span> m/s²</p>
