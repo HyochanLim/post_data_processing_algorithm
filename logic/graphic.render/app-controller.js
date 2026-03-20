@@ -17,6 +17,20 @@ async function loadFile(filePath) {
     return file;
 }
 
+async function loadFirstAvailableFile(filePaths) {
+    let lastError = null;
+
+    for (const filePath of filePaths) {
+        try {
+            return await loadFile(filePath);
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error('No available flight data file');
+}
+
 let file = [];
 let currentFrame = 0;
 let isPlaying = false;
@@ -70,7 +84,11 @@ function updateTelemetry(frame) {
     sceneRenderer.renderTelemetry(telemetry);
 }
 
-loadFile('/data/raw/2025-02-23-serial-10970-flight-0017.json')
+loadFirstAvailableFile([
+    '/data/processed/2025-02-23-serial-10970-flight-0017-filtered.json',
+    '/data/processed/manual-test.json',
+    '/data/raw/2025-02-23-serial-10970-flight-0017.json'
+])
     .then((loadedFile) => {
         file = loadedFile;
         timeSliderElement.min = '0';

@@ -8,9 +8,10 @@ function toTelemetry(frameData) {
     const vx = Number(safeFrame?.velocity?.[0] ?? 0);
     const vy = Number(safeFrame?.velocity?.[1] ?? 0);
     const vz = Number(safeFrame?.velocity?.[2] ?? 0);
-    const ax = Number(safeFrame?.accel_x ?? 0);
-    const ay = Number(safeFrame?.accel_y ?? 0);
-    const az = Number(safeFrame?.accel_z ?? 0);
+    const filteredAccel = safeFrame?.acceleration_body;
+    const ax = Number(filteredAccel?.[0] ?? safeFrame?.accel_x ?? 0);
+    const ay = Number(filteredAccel?.[1] ?? safeFrame?.accel_y ?? 0);
+    const az = Number(filteredAccel?.[2] ?? safeFrame?.accel_z ?? 0);
 
     return {
         time: Number(safeFrame?.time ?? 0),
@@ -153,6 +154,20 @@ async function loadFile(filePath) {
     return file;
 }
 
+async function loadFirstAvailableFile(filePaths) {
+    let lastError = null;
+
+    for (const filePath of filePaths) {
+        try {
+            return await loadFile(filePath);
+        } catch (error) {
+            lastError = error;
+        }
+    }
+
+    throw lastError || new Error('No available flight data file');
+}
+
 let file = [];
 let currentFrame = 0;
 let isPlaying = false;
@@ -206,7 +221,11 @@ function updateTelemetry(frame) {
     sceneRenderer.renderTelemetry(telemetry);
 }
 
-loadFile('/data/raw/2025-02-23-serial-10970-flight-0017.json')
+loadFirstAvailableFile([
+    '/data/processed/2025-02-23-serial-10970-flight-0017-filtered.json',
+    '/data/processed/manual-test.json',
+    '/data/raw/2025-02-23-serial-10970-flight-0017.json'
+])
     .then((loadedFile) => {
         file = loadedFile;
         timeSliderElement.min = '0';

@@ -7,9 +7,10 @@ function toTelemetry(frameData) {
     const vx = Number(safeFrame?.velocity?.[0] ?? 0);
     const vy = Number(safeFrame?.velocity?.[1] ?? 0);
     const vz = Number(safeFrame?.velocity?.[2] ?? 0);
-    const ax = Number(safeFrame?.accel_x ?? 0);
-    const ay = Number(safeFrame?.accel_y ?? 0);
-    const az = Number(safeFrame?.accel_z ?? 0);
+    const filteredAccel = safeFrame?.acceleration_body;
+    const ax = Number(filteredAccel?.[0] ?? safeFrame?.accel_x ?? 0);
+    const ay = Number(filteredAccel?.[1] ?? safeFrame?.accel_y ?? 0);
+    const az = Number(filteredAccel?.[2] ?? safeFrame?.accel_z ?? 0);
 
     return {
         time: Number(safeFrame?.time ?? 0),

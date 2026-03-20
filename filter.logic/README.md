@@ -16,11 +16,6 @@ How close to ArduPilot
 Files
 - nav_filter.py: standalone minimal EKF-style implementation
 - process_raw_json.py: runner for data/raw/*.json
-- ardupilot_source/: copied original ArduPilot EKF3/AP_Math source files
-
-Strict original-math path
-- If you must keep ArduPilot math untouched, use files under ardupilot_source/ as source-of-truth.
-- See ardupilot_source/USAGE.md for replay-based execution notes.
 
 Run
 1) from workspace root
