@@ -63,6 +63,8 @@ function createAxisLabel(text, color, position) {
 
 function createSceneRenderer() {
     const scene = new three.Scene();
+    // 지구좌표계 x축이 하늘(Up)이 되도록 전체 씬을 z축 기준 -90도 회전
+    scene.rotation.z = -Math.PI / 2;
     const viewerElement = document.getElementById('viewer');
 
     const camera = new three.PerspectiveCamera(60, 1, 0.1, 100);
@@ -283,6 +285,7 @@ function createSceneRenderer() {
         yAccelElement.textContent = safeTelemetry.accel.y.toFixed(3);
         zAccelElement.textContent = safeTelemetry.accel.z.toFixed(3);
         accelValueElement.textContent = safeTelemetry.accelMagnitude.toFixed(3);
+        
     }
 
     return {

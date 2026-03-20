@@ -34,9 +34,9 @@ function toPrograde(frameData, minVelocityMagnitude) {
     const vy = Number(velocity[1]) || 0;
     const vz = Number(velocity[2]) || 0;
 
-    // Swap X/Y from raw frame to match viewer axis convention.
-    const viewerX = vy;
-    const viewerY = vx;
+    // Swap 제거: 데이터와 화면 방향 일치
+    const viewerX = vx;
+    const viewerY = vy;
     const viewerZ = vz;
     const magnitude = Math.sqrt((viewerX * viewerX) + (viewerY * viewerY) + (viewerZ * viewerZ));
 
